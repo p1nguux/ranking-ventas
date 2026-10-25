@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ranking de Ventas — Ammu-Nation Sandy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root { --red:#d6192b; --red-dark:#9e0f1d; --red-bright:#ff4d5e; --blue:#123a8f; --blue-light:#6c93f0; --blue-dark:#0a1f4f; --navy:#07122e; --white:#fff; --muted:#a9b6d6; --line:rgba(255,255,255,.12); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Inter',system-ui,sans-serif; color:var(--white); min-height:100vh; padding:0 16px 60px;
+    background: radial-gradient(900px 500px at 90% -10%, rgba(214,25,43,.22), transparent 60%), radial-gradient(900px 600px at -10% 5%, rgba(18,58,143,.5), transparent 60%), var(--navy); }
+  .stripe { height:10px; margin:0 -16px; background:repeating-linear-gradient(-45deg,var(--red) 0 18px,var(--white) 18px 36px,var(--blue) 36px 54px); }
+  .wrap { max-width:1100px; margin:0 auto; }
+  header { text-align:center; padding:40px 0 24px; }
+  .logo { width:72px; height:72px; margin:0 auto 14px; display:grid; place-items:center; font-family:'Oswald',sans-serif; font-weight:700; font-size:26px;
+    background:linear-gradient(135deg,var(--red) 0 50%,var(--blue) 50% 100%); border:3px solid var(--white); border-radius:14px; box-shadow:0 8px 28px rgba(0,0,0,.45); text-shadow:0 2px 4px rgba(0,0,0,.5); }
+  h1 { font-family:'Oswald',sans-serif; font-weight:700; font-size:clamp(28px,6vw,44px); letter-spacing:3px; text-transform:uppercase; }
+  h1 span { color:var(--red); }
+  .sub { margin-top:6px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; font-size:13px; }
+  .layout { display:grid; grid-template-columns:minmax(0,1fr) 664px; gap:24px; align-items:start; }
+  @media (max-width:1180px) { .layout { grid-template-columns:1fr; } }
+  .panel { background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025)); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:22px; box-shadow:0 10px 30px rgba(0,0,0,.3); position:relative; overflow:hidden; }
+  .panel::before { content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:linear-gradient(var(--red),var(--blue)); }
+  h2 { font-family:'Oswald',sans-serif; font-weight:600; font-size:19px; letter-spacing:1px; text-transform:uppercase; margin-bottom:14px; }
+  label { display:block; font-size:12px; font-weight:600; color:var(--muted); letter-spacing:.5px; text-transform:uppercase; margin-bottom:5px; }
+  input { width:100%; font:inherit; font-size:14px; color:var(--white); background:rgba(5,12,34,.75); border:1.5px solid var(--line); border-radius:8px; padding:9px 11px; color-scheme:dark; }
+  input:focus { outline:none; border-color:var(--red); box-shadow:0 0 0 3px rgba(214,25,43,.25); }
+  ::placeholder { color:#6f7fa8; }
+  .dates { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .emp-head, .emp-row { display:grid; grid-template-columns:1.6fr .8fr 1fr 40px; gap:10px; align-items:center; }
+  .emp-head { font-size:11px; font-weight:700; color:var(--muted); letter-spacing:.6px; text-transform:uppercase; padding:0 2px 6px; }
+  .emp-row { margin-bottom:8px; }
+  .empty { text-align:center; color:var(--muted); padding:18px; font-size:14px; }
+  .del { background:rgba(214,25,43,.2); border:1px solid var(--red); color:var(--white); border-radius:8px; height:38px; cursor:pointer; font-size:15px; }
+  .del:hover { background:var(--red); }
+  .btn { border:0; cursor:pointer; font-family:'Oswald',sans-serif; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; font-size:15px; padding:11px 20px; border-radius:10px; color:var(--white); }
+  .btn:hover { filter:brightness(1.12); } .btn:disabled { opacity:.6; cursor:wait; }
+  .btn.add { background:linear-gradient(90deg,var(--red-dark),var(--red)); margin-top:6px; }
+  .btn.copy { background:var(--white); color:var(--blue-dark); }
+  .btn.img { background:linear-gradient(90deg,var(--blue-dark),var(--blue)); border:1px solid var(--blue-light); }
+  .btn.ghost { background:transparent; border:1.5px solid rgba(255,255,255,.35); }
+  .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; }
+  .hook { margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
+  .hook .hint { color:var(--muted); font-size:12px; margin-top:6px; line-height:1.5; }
+  #msg { margin-top:14px; padding:12px 14px; border-radius:10px; font-size:14px; display:none; line-height:1.5; }
+  #msg.ok { display:block; background:rgba(18,58,143,.45); border:1px solid #5b86e0; }
+  #msg.err { display:block; background:rgba(214,25,43,.2); border:1px solid var(--red); }
+  .previewcol { position:sticky; top:16px; }
+  @media (max-width:1180px) { .previewcol { position:static; } }
+  .prevlabel { font-family:'Oswald',sans-serif; letter-spacing:2px; text-transform:uppercase; font-size:13px; color:var(--muted); margin-bottom:10px; text-align:center; }
+  .fit { overflow-x:auto; padding-bottom:6px; }
+  footer { text-align:center; color:var(--muted); font-size:12px; margin-top:34px; letter-spacing:1px; }
+  @media (max-width:640px) {
+    .emp-head { display:none; }
+    .emp-row { grid-template-columns:1fr 1fr; padding:12px; border:1px solid var(--line); border-radius:10px; }
+    .emp-row > :first-child { grid-column:1 / -1; }
+    .del { width:100%; }
+    .dates { grid-template-columns:1fr; }
+  }
+
+  /* ============ TARJETA DEL RANKING (imagen) ============ */
+  #rank { width:640px; margin:0 auto; position:relative; overflow:hidden; border-radius:10px; color:#fff;
+    background: radial-gradient(500px 260px at 100% 0%, rgba(214,25,43,.30), transparent 65%), radial-gradient(520px 320px at 0% 0%, rgba(18,58,143,.65), transparent 65%), #07122e;
+    border:2px solid #1d3a82; box-shadow:0 18px 50px rgba(0,0,0,.55); }
+  #rank .r-stripe { height:12px; background:repeating-linear-gradient(-45deg,#d6192b 0 18px,#fff 18px 36px,#123a8f 36px 54px); }
+  #rank .r-head { display:flex; align-items:center; gap:16px; padding:22px 26px 14px; }
+  #rank .r-logo { width:60px; height:60px; flex:none; display:grid; place-items:center; font-family:'Oswald',sans-serif; font-weight:700; font-size:22px; background:linear-gradient(135deg,#d6192b 0 50%,#123a8f 50% 100%); border:3px solid #fff; border-radius:12px; }
+  #rank .r-title { flex:1; }
+  #rank .r-title small { display:block; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:#a9b6d6; font-weight:600; }
+  #rank .r-title b { display:block; font-family:'Oswald',sans-serif; font-size:30px; letter-spacing:3px; text-transform:uppercase; line-height:1.1; }
+  #rank .r-title b i { font-style:normal; color:#ff4d5e; }
+  #rank .r-range { margin:0 26px 16px; padding:9px 14px; text-align:center; border-radius:8px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); font-family:'Oswald',sans-serif; letter-spacing:2px; font-size:16px; text-transform:uppercase; }
+  #rank .r-list { padding:0 26px; }
+  #rank .r-row { display:grid; grid-template-columns:44px 1fr auto; gap:14px; align-items:center; padding:10px 14px; margin-bottom:8px; border-radius:10px; background:rgba(5,12,34,.7); border:1px solid rgba(255,255,255,.1); }
+  #rank .r-row.p1 { background:linear-gradient(90deg,rgba(255,194,51,.22),rgba(5,12,34,.7)); border-color:#ffc233; }
+  #rank .r-row.p2 { background:linear-gradient(90deg,rgba(200,208,224,.18),rgba(5,12,34,.7)); border-color:#c8d0e0; }
+  #rank .r-row.p3 { background:linear-gradient(90deg,rgba(214,133,69,.22),rgba(5,12,34,.7)); border-color:#d68545; }
+  #rank .r-pos { width:40px; height:40px; border-radius:50%; display:grid; place-items:center; font-family:'Oswald',sans-serif; font-weight:700; font-size:19px; background:#16275a; border:2px solid #34498f; }
+  #rank .p1 .r-pos { background:#ffc233; color:#3d2a00; border-color:#fff2c4; }
+  #rank .p2 .r-pos { background:#c8d0e0; color:#1b2540; border-color:#fff; }
+  #rank .p3 .r-pos { background:#d68545; color:#3a1c05; border-color:#ffd9b8; }
+  #rank .r-name { font-weight:700; font-size:16px; word-break:break-word; line-height:1.2; }
+  #rank .r-bar { height:7px; border-radius:4px; background:rgba(255,255,255,.1); margin-top:7px; overflow:hidden; }
+  #rank .r-bar i { display:block; height:100%; border-radius:4px; background:linear-gradient(90deg,#123a8f,#6c93f0); }
+  #rank .p1 .r-bar i { background:linear-gradient(90deg,#d6192b,#ff4d5e); }
+  #rank .r-val { text-align:right; font-family:'Oswald',sans-serif; font-size:23px; letter-spacing:1px; line-height:1.1; white-space:nowrap; }
+  #rank .r-val small { display:block; font-family:'Inter',sans-serif; font-size:11px; letter-spacing:.5px; color:#a9b6d6; font-weight:600; margin-top:2px; }
+  #rank .r-empty { text-align:center; color:#a9b6d6; padding:30px 10px 34px; font-size:14px; }
+  #rank .r-tot { display:flex; gap:10px; margin:6px 26px 20px; }
+  #rank .r-tot div { flex:1; text-align:center; padding:10px 8px; border-radius:10px; background:rgba(214,25,43,.15); border:1px solid rgba(214,25,43,.5); }
+  #rank .r-tot div:nth-child(even) { background:rgba(18,58,143,.35); border-color:rgba(108,147,240,.55); }
+  #rank .r-tot small { display:block; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:#a9b6d6; font-weight:700; }
+  #rank .r-tot b { display:block; font-family:'Oswald',sans-serif; font-size:22px; letter-spacing:1px; margin-top:2px; }
+  #rank .r-bar2 { display:flex; justify-content:space-between; padding:8px 26px; background:#0a1535; color:#a9b6d6; font-size:10px; letter-spacing:2px; text-transform:uppercase; font-weight:600; }
+</style>
+</head>
+<body>
+<div class="stripe"></div>
+<div class="wrap">
+  <header>
+    <div class="logo">AN</div>
+    <h1>Ranking de <span>Ventas</span></h1>
+    <p class="sub">Facturas y total generado de la semana</p>
+  </header>
+
+  <div class="layout">
+    <div>
+      <section class="panel">
+        <h2>📅 Semana</h2>
+        <div class="dates">
+          <div><label for="d1">Desde</label><input type="date" id="d1"></div>
+          <div><label for="d2">Hasta</label><input type="date" id="d2"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>👥 Empleados y ventas</h2>
+        <div class="emp-head" id="head"><span>Nombre</span><span>Facturas</span><span>Total generado</span><span></span></div>
+        <div id="rows"></div>
+        <button class="btn add" id="add" type="button">+ Añadir empleado</button>
+      </section>
+
+      <section class="panel">
+        <h2>📤 Exportar</h2>
+        <div class="actions">
+          <button class="btn copy" id="copy" type="button">Copiar texto</button>
+          <button class="btn img" id="dl" type="button">Descargar imagen</button>
+          <button class="btn ghost" id="clear" type="button">Limpiar todo</button>
+          <button class="btn add" id="send" type="button" style="margin-top:0">Enviar a Discord</button>
+        </div>
+        <div id="msg"></div>
+      </section>
+    </div>
+
+    <div class="previewcol">
+      <p class="prevlabel">Vista previa del ranking</p>
+      <div class="fit">
+        <div id="rank">
+          <div class="r-stripe"></div>
+          <div class="r-head">
+            <div class="r-logo">AN</div>
+            <div class="r-title"><small>Ammu-Nation Sandy</small><b>Ranking de <i>Ventas</i></b></div>
+          </div>
+          <div class="r-range" id="r-range">Selecciona las fechas</div>
+          <div class="r-list" id="r-list"></div>
+          <div class="r-tot" id="r-tot"></div>
+          <div class="r-bar2"><span>Ammu-Nation Sandy</span><span>Ventas semanales</span></div>
+          <div class="r-stripe"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>AMMU-NATION SANDY · Ventas semanales</footer>
+</div>
+<div class="stripe" style="margin-top:40px"></div>
+
+<script>
+  const MODE = 'ventas';   // 'horas' | 'ventas'
+  const KEY = 'an_rank_' + MODE;
+  const WEBHOOK_URL = "https://discord.com/api/webhooks/1563657345861689436/E52HGxWxhNNyL-EeRmVfMk9FtjJV3G3LtIhZ8oMhFI9K2zU3HbAygw9OixEz3gk3a39a";
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const pad = n => String(n).padStart(2, '0');
+  const fmtISO = iso => { if (!iso) return '--/--/----'; const [y, m, d] = iso.split('-'); return d + '/' + m + '/' + y; };
+  const nf = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
+  const money = n => '$' + new Intl.NumberFormat('es-ES', { maximumFractionDigits: 0 }).format(Math.round(n));
+  const medals = ['🥇', '🥈', '🥉'];
+
+  let state = { d1: '', d2: '', emps: [] };
+
+  function load() { state = { d1: '', d2: '', emps: [blank()] }; }
+  function save() {}
+  const blank = () => ({ name: '', inv: '', total: '' });
+
+  function drawRows() {
+    $('rows').innerHTML = state.emps.map((e, i) => `
+      <div class="emp-row" data-i="${i}">
+        <input type="text" data-f="name" placeholder="Nombre y Apellido" value="${esc(e.name)}">
+        <input type="number" data-f="inv" min="0" step="1" placeholder="Nº" value="${esc(e.inv)}">
+        <input type="number" data-f="total" min="0" step="any" placeholder="$ Total" value="${esc(e.total)}">
+        <button class="del" type="button" data-del title="Eliminar">✕</button>
+      </div>`).join('');
+  }
+
+  
+  const num = v => { const n = parseFloat(String(v).replace(',', '.')); return isNaN(n) ? 0 : n; };
+  const sorted = () => state.emps.filter(e => e.name.trim()).map(e => ({ name: e.name.trim(), inv: Math.round(num(e.inv)), total: num(e.total) })).sort((a, b) => b.total - a.total || b.inv - a.inv);
+  const sortVal = e => e.total;
+  const valueHTML = e => money(e.total) + '<small>' + e.inv + ' factura' + (e.inv === 1 ? '' : 's') + '</small>';
+  const valueText = e => money(e.total) + ' · ' + e.inv + ' factura' + (e.inv === 1 ? '' : 's');
+  const totalsHTML = list => {
+    const t = list.reduce((s, e) => s + e.total, 0), f = list.reduce((s, e) => s + e.inv, 0);
+    return '<div><small>Total generado</small><b>' + money(t) + '</b></div><div><small>Facturas</small><b>' + f + '</b></div><div><small>Ticket medio</small><b>' + money(f ? t / f : 0) + '</b></div>';
+  };
+  const totalsText = list => {
+    const t = list.reduce((s, e) => s + e.total, 0), f = list.reduce((s, e) => s + e.inv, 0);
+    return '💰 **Total generado:** ' + money(t) + ' · **Facturas:** ' + f + ' · **Ticket medio:** ' + money(f ? t / f : 0);
+  };
+
+  function render() {
+    $('r-range').textContent = state.d1 && state.d2 ? 'Del ' + fmtISO(state.d1) + ' al ' + fmtISO(state.d2) : 'Selecciona las fechas';
+    const list = sorted();
+    if (!list.length) {
+      $('r-list').innerHTML = '<div class="r-empty">Añade empleados para ver el ranking</div>';
+      $('r-tot').innerHTML = '';
+      return;
+    }
+    const max = Math.max(...list.map(e => sortVal(e))) || 1;
+    $('r-list').innerHTML = list.map((e, i) => `
+      <div class="r-row ${i < 3 ? 'p' + (i + 1) : ''}">
+        <div class="r-pos">${i + 1}</div>
+        <div><div class="r-name">${esc(e.name)}</div><div class="r-bar"><i style="width:${Math.max(3, sortVal(e) / max * 100)}%"></i></div></div>
+        <div class="r-val">${valueHTML(e)}</div>
+      </div>`).join('');
+    $('r-tot').innerHTML = totalsHTML(list);
+  }
+
+  function summaryText() {
+    const list = sorted();
+    let t = '🏆 **RANKING DE VENTAS — AMMU-NATION SANDY**\n📅 Del ' + fmtISO(state.d1) + ' al ' + fmtISO(state.d2) + '\n\n';
+    list.forEach((e, i) => { t += (medals[i] || '`' + (i + 1) + '.`') + ' **' + e.name + '** — ' + valueText(e) + '\n'; });
+    t += '\n' + totalsText(list);
+    return t;
+  }
+
+  function show(type, text) { const m = $('msg'); m.className = type; m.textContent = text; m.style.display = 'block'; }
+  async function makeImage() {
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    const canvas = await html2canvas($('rank'), { scale: 2, backgroundColor: null, useCORS: true, logging: false });
+    return await new Promise(res => canvas.toBlob(res, 'image/png'));
+  }
+  function refresh() { save(); render(); }
+
+  $('d1').addEventListener('change', e => { state.d1 = e.target.value; refresh(); });
+  $('d2').addEventListener('change', e => { state.d2 = e.target.value; refresh(); });
+  $('add').addEventListener('click', () => { state.emps.push(blank()); drawRows(); refresh(); });
+  $('rows').addEventListener('input', e => {
+    const row = e.target.closest('.emp-row'); if (!row) return;
+    const f = e.target.dataset.f, i = +row.dataset.i;
+    state.emps[i][f] = f === 'name' ? e.target.value : e.target.value;
+    refresh();
+  });
+  $('rows').addEventListener('click', e => {
+    if (!e.target.closest('[data-del]')) return;
+    const i = +e.target.closest('.emp-row').dataset.i;
+    state.emps.splice(i, 1); if (!state.emps.length) state.emps.push(blank());
+    drawRows(); refresh();
+  });
+  $('clear').addEventListener('click', () => {
+    if (!confirm('¿Borrar todos los empleados y datos de esta semana?')) return;
+    state = { d1: '', d2: '', emps: [blank()] }; $('d1').value = ''; $('d2').value = ''; drawRows(); refresh();
+  });
+  $('copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(summaryText()); show('ok', '✅ Texto copiado. Pégalo en Discord.'); }
+    catch (e) { show('err', 'No se pudo copiar automáticamente.'); }
+  });
+  $('dl').addEventListener('click', async () => {
+    try {
+      const blob = await makeImage();
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = 'ranking-ventas-' + (state.d1 || 'semana') + '.png'; a.click();
+    } catch (e) { show('err', 'No se pudo generar la imagen.'); }
+  });
+  $('send').addEventListener('click', async () => {
+    if (!sorted().length) return show('err', 'Añade al menos un empleado con nombre.');
+    const b = $('send'); b.disabled = true; b.textContent = 'Enviando...';
+    try {
+      const blob = await makeImage();
+      const fd = new FormData();
+      fd.append('payload_json', JSON.stringify({ embeds: [{ color: 0xD6192B, image: { url: 'attachment://ranking.png' } }] }));
+      fd.append('files[0]', blob, 'ranking.png');
+      const r = await fetch(WEBHOOK_URL, { method: 'POST', body: fd });
+      if (!r.ok) throw new Error(r.status);
+      show('ok', '✅ Ranking enviado al canal.');
+    } catch (e) { show('err', 'No se pudo enviar. Descarga la imagen y súbela a mano.'); }
+    finally { b.disabled = false; b.textContent = 'Enviar a Discord'; }
+  });
+
+  load(); $('d1').value = state.d1; $('d2').value = state.d2; drawRows(); render();
+</script>
+</body>
+</html>
